@@ -1,14 +1,14 @@
-module "provider" {
-  source = "./provider/hcloud"
-
-  token           = "${var.hcloud_token}"
-  ssh_keys        = "${var.hcloud_ssh_keys}"
-  location        = "${var.hcloud_location}"
-  type            = "${var.hcloud_type}"
-  image           = "${var.hcloud_image}"
-  hosts           = "${var.node_count}"
-  hostname_format = "${var.hostname_format}"
-}
+# module "provider" {
+#  source = "./provider/hcloud"
+#
+#  token           = "${var.hcloud_token}"
+#  ssh_keys        = "${var.hcloud_ssh_keys}"
+#  location        = "${var.hcloud_location}"
+#  type            = "${var.hcloud_type}"
+#  image           = "${var.hcloud_image}"
+#  hosts           = "${var.node_count}"
+#  hostname_format = "${var.hostname_format}"
+#}
 
 # module "provider" {
 #   source = "./provider/scaleway"
@@ -22,17 +22,16 @@ module "provider" {
 #   hostname_format = "${var.hostname_format}"
 # }
 
-# module "provider" {
-#   source = "./provider/digitalocean"
-#
-#   token           = "${var.digitalocean_token}"
-#   ssh_keys        = "${var.digitalocean_ssh_keys}"
-#   region          = "${var.digitalocean_region}"
-#   size            = "${var.digitalocean_size}"
-#   image           = "${var.digitalocean_image}"
-#   hosts           = "${var.node_count}"
-#   hostname_format = "${var.hostname_format}"
-# }
+module "provider" {
+  source = "./provider/digitalocean"
+  token           = "${var.digitalocean_token}"
+  ssh_keys        = "${var.digitalocean_ssh_keys}"
+  region          = "${var.digitalocean_region}"
+  size            = "${var.digitalocean_size}"
+  image           = "${var.digitalocean_image}"
+  hosts           = "${var.node_count}"
+  hostname_format = "${var.hostname_format}"
+}
 
 module "swap" {
   source = "./service/swap"
@@ -41,28 +40,29 @@ module "swap" {
   connections = "${module.provider.public_ips}"
 }
 
+# module "dns" {
+#  source = "./dns/cloudflare"
+#
+#  count      = "${var.node_count}"
+#  email      = "${var.cloudflare_email}"
+#  token      = "${var.cloudflare_token}"
+#  domain     = "${var.domain}"
+#  public_ips = "${module.provider.public_ips}"
+#  hostnames  = "${module.provider.hostnames}"
+#}
+
 module "dns" {
-  source = "./dns/cloudflare"
+  source = "./dns/aws"
 
   count      = "${var.node_count}"
-  email      = "${var.cloudflare_email}"
-  token      = "${var.cloudflare_token}"
+  access_key = "${var.aws_access_key}"
+  secret_key = "${var.aws_secret_key}"
+  region     = "${var.aws_region}"
   domain     = "${var.domain}"
   public_ips = "${module.provider.public_ips}"
   hostnames  = "${module.provider.hostnames}"
 }
 
-# module "dns" {
-#   source = "./dns/aws"
-#
-#   count      = "${var.node_count}"
-#   access_key = "${var.aws_access_key}"
-#   secret_key = "${var.aws_secret_key}"
-#   region     = "${var.aws_region}"
-#   domain     = "${var.domain}"
-#   public_ips = "${module.provider.public_ips}"
-#   hostnames  = "${module.provider.hostnames}"
-# }
 
 # module "dns" {
 #   source = "./dns/google"
@@ -77,15 +77,15 @@ module "dns" {
 #   hostnames    = "${module.provider.hostnames}"
 # }
 
-# module "dns" {
-#   source     = "./dns/digitalocean"
+#module "dns" {
+#  source     = "./dns/digitalocean"
 #
-#   count      = "${var.node_count}"
-#   token      = "${var.digitalocean_token}"
-#   domain     = "${var.domain}"
-#   public_ips = "${module.provider.public_ips}"
-#   hostnames  = "${module.provider.hostnames}"
-# }
+#  count      = "${var.node_count}"
+#  token      = "${var.digitalocean_token}"
+#  domain     = "${var.domain}"
+#  public_ips = "${module.provider.public_ips}"
+#  hostnames  = "${module.provider.hostnames}"
+#}
 
 module "wireguard" {
   source = "./security/wireguard"

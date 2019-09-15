@@ -9,7 +9,7 @@ variable "etcd_node_count" {
 }
 
 variable "domain" {
-  default = "example.com"
+  default = "smstech.us"
 }
 
 variable "hostname_format" {
